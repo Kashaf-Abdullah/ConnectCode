@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Pairing - Desktop</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #5e72e4;
+            --success-color: #2dce89;
+            --info-color: #11cdef;
+            --warning-color: #fb6340;
+            --dark-color: #172b4d;
+            --light-bg: #f7fafc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .main-container {
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .code-card {
+            background: white;
+            border-radius: 20px;
+            padding: 50px 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            margin-bottom: 30px;
+            border: none;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            border-radius: 50px;
+            background: var(--light-bg);
+            margin-bottom: 30px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-connecting {
+            background-color: var(--warning-color);
+            animation: pulse 1.5s infinite;
+        }
+
+        .status-connected {
+            background-color: var(--success-color);
+        }
+
+        .status-disconnected {
+            background-color: #dc3545;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .code-display {
+            font-size: 80px;
+            font-weight: 700;
+            color: var(--primary-color);
+            letter-spacing: 25px;
+            font-family: 'Courier New', monospace;
+            margin: 30px 0;
+            text-shadow: 0 4px 10px rgba(94, 114, 228, 0.2);
+        }
+
+        .mobile-status {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #6c757d;
+        }
+
+        .mobile-connected {
+            color: var(--success-color);
+            font-weight: 600;
+        }
+
+        .links-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border: none;
+        }
+
+        .card-header-custom {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--light-bg);
+        }
+
+        .card-header-custom h3 {
+            margin: 0;
+            font-weight: 700;
+            color: var(--dark-color);
+            font-size: 1.5rem;
+        }
+
+        .card-header-custom i {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+        }
+
+        .link-item {
+            background: var(--light-bg);
+            border: 2px solid transparent;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .link-item:hover {
+            background: rgba(94, 114, 228, 0.05);
+            border-color: var(--primary-color);
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(94, 114, 228, 0.2);
+        }
+
+        .link-url {
+            font-size: 16px;
+            color: var(--primary-color);
+            word-break: break-all;
+            margin-bottom: 8px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .link-time {
+            font-size: 14px;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+
+        .empty-state i {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+            color: var(--primary-color);
+        }
+
+        .empty-state p {
+            font-size: 16px;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .code-display {
+                font-size: 50px;
+                letter-spacing: 15px;
+            }
+
+            .code-card {
+                padding: 30px 20px;
+            }
+
+            .links-card {
+                padding: 25px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Code Display Card -->
+        <div class="code-card">
+            <div class="status-indicator" id="statusIndicator">
+                <span class="status-dot status-connecting" id="statusDot"></span>
+                <span id="statusText">Connecting...</span>
+            </div>
+            <div class="code-display" id="codeDisplay">------</div>
+            <div class="mobile-status" id="mobileStatus"></div>
+        </div>
+
+        <!-- Links Card -->
+        <div class="links-card">
+            <div class="card-header-custom">
+                <i class="bi bi-link-45deg"></i>
+                <h3>Received Links</h3>
+            </div>
+            <div id="linksList">
+                <div class="empty-state">
+                    <i class="bi bi-inbox"></i>
+                    <p>No links received yet. Share the code above with your mobile device.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.8.3/socket.io.min.js"></script>
+    <script src="js/socket-client.js"></script>
+    <script>
+        class DesktopClient extends SocketClient {
+            constructor() {
+                super();
+                this.currentCode = null;
+                this.links = [];
+            }
+
+            onConnect() {
+                this.updateStatus('connected', 'Connected');
+                this.socket.emit('desktop:connect');
+            }
+
+            onDisconnect(reason) {
+                this.updateStatus('disconnected', 'Disconnected');
+            }
+
+            onConnectError(error) {
+                this.updateStatus('disconnected', 'Connection Error');
+            }
+
+            onReconnect(attemptNumber) {
+                this.updateStatus('connected', 'Reconnected');
+                if (this.socket) {
+                    this.socket.emit('desktop:connect');
+                }
+            }
+
+            onReconnectFailed() {
+                this.updateStatus('disconnected', 'Connection Failed');
+                document.getElementById('codeDisplay').textContent = '------';
+            }
+
+            updateStatus(status, text) {
+                const statusDot = document.getElementById('statusDot');
+                const statusText = document.getElementById('statusText');
+                statusDot.className = 'status-dot status-' + status;
+                statusText.textContent = text;
+            }
+
+            displayCode(code) {
+                this.currentCode = code;
+                document.getElementById('codeDisplay').textContent = code;
+            }
+
+            addLink(link) {
+                const linkData = {
+                    url: link,
+                    timestamp: new Date()
+                };
+                this.links.unshift(linkData);
+                if (this.links.length > 10) {
+                    this.links = this.links.slice(0, 10);
+                }
+                this.renderLinks();
+            }
+
+            renderLinks() {
+                const linksList = document.getElementById('linksList');
+                if (this.links.length === 0) {
+                    linksList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="bi bi-inbox"></i>
+                            <p>No links received yet. Share the code above with your mobile device.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                linksList.innerHTML = this.links.map((linkData) => {
+                    const timeAgo = this.getTimeAgo(linkData.timestamp);
+                    return `
+                        <div class="link-item" onclick="window.open('${this.escapeHtml(linkData.url)}', '_blank')">
+                            <div class="link-url">
+                                <i class="bi bi-link-45deg"></i>
+                                <span>${this.escapeHtml(linkData.url)}</span>
+                            </div>
+                            <div class="link-time">
+                                <i class="bi bi-clock"></i>
+                                <span>Received ${timeAgo}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            getTimeAgo(date) {
+                const seconds = Math.floor((new Date() - date) / 1000);
+                if (seconds < 60) return 'just now';
+                const minutes = Math.floor(seconds / 60);
+                if (minutes < 60) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+                const hours = Math.floor(minutes / 60);
+                return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+            }
+
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            updateMobileStatus(connected) {
+                const mobileStatus = document.getElementById('mobileStatus');
+                if (connected) {
+                    mobileStatus.innerHTML = '<i class="bi bi-phone"></i> <span class="mobile-connected">Mobile device connected</span>';
+                } else {
+                    mobileStatus.innerHTML = '<i class="bi bi-phone"></i> Waiting for mobile device...';
+                }
+            }
+        }
+
+        const desktopClient = new DesktopClient();
+        const API_BASE_URL = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost' 
+            ? 'http://127.0.0.1:3000' 
+            : '';
+        const socket = desktopClient.connect(API_BASE_URL || 'http://localhost:3000');
+
+        socket.on('desktop:code', (data) => {
+            desktopClient.displayCode(data.code);
+        });
+
+        socket.on('desktop:link', (data) => {
+            desktopClient.addLink(data.link);
+        });
+
+        socket.on('desktop:mobile-connected', (data) => {
+            desktopClient.updateMobileStatus(true);
+        });
+
+        socket.on('desktop:mobile-disconnected', (data) => {
+            desktopClient.updateMobileStatus(false);
+        });
+
+        socket.on('desktop:error', (data) => {
+            console.error('Desktop error:', data.message);
+            alert('Error: ' + data.message);
+        });
+    </script>
+</body>
+</html>

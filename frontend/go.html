@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Pairing - Mobile</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #5e72e4;
+            --success-color: #2dce89;
+            --info-color: #11cdef;
+            --warning-color: #fb6340;
+            --danger-color: #f5365c;
+            --dark-color: #172b4d;
+            --light-bg: #f7fafc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .main-container {
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border: none;
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .card-header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .card-header i {
+            font-size: 2rem;
+        }
+
+        .card-body {
+            padding: 40px 30px;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .step-indicator::before {
+            content: '';
+            position: absolute;
+            top: 25px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--light-bg);
+            z-index: 0;
+        }
+
+        .step {
+            background: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            position: relative;
+            z-index: 1;
+            border: 4px solid var(--light-bg);
+            color: #6c757d;
+            transition: all 0.3s ease;
+        }
+
+        .step.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(94, 114, 228, 0.4);
+        }
+
+        .step.completed {
+            background: var(--success-color);
+            color: white;
+            border-color: var(--success-color);
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1rem;
+        }
+
+        .form-label i {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+
+        .form-control {
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 15px 20px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(94, 114, 228, 0.1);
+        }
+
+        .code-input {
+            font-size: 36px;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 15px;
+            font-family: 'Courier New', monospace;
+            text-transform: uppercase;
+            color: var(--primary-color);
+        }
+
+        .btn {
+            border-radius: 12px;
+            padding: 15px 30px;
+            font-weight: 600;
+            font-size: 16px;
+            border: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(94, 114, 228, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .alert {
+            border-radius: 12px;
+            border: none;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: rgba(45, 206, 137, 0.1);
+            color: #137333;
+            border-left: 4px solid var(--success-color);
+        }
+
+        .alert-danger {
+            background: rgba(245, 54, 92, 0.1);
+            color: #c5221f;
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            border-radius: 50px;
+            background: rgba(45, 206, 137, 0.1);
+            color: #137333;
+            font-weight: 600;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .link-submit-section {
+            margin-top: 30px;
+        }
+
+        .form-text {
+            display: block;
+            margin-top: 8px;
+            color: #6c757d;
+            font-size: 13px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 576px) {
+            .card-body {
+                padding: 30px 20px;
+            }
+
+            .code-input {
+                font-size: 28px;
+                letter-spacing: 10px;
+            }
+
+            .step {
+                width: 40px;
+                height: 40px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="card">
+            <div class="card-header">
+                <h1>
+                    <i class="bi bi-phone"></i>
+                    Mobile Controller
+                </h1>
+            </div>
+            <div class="card-body">
+                <div class="step-indicator">
+                    <div class="step active" id="step1">1</div>
+                    <div class="step" id="step2">2</div>
+                    <div class="step" id="step3">3</div>
+                </div>
+
+                <div id="codeInputSection">
+                    <label class="form-label">
+                        <i class="bi bi-key"></i>
+                        Enter Pairing Code
+                    </label>
+                    <input 
+                        type="text" 
+                        class="form-control code-input" 
+                        id="codeInput" 
+                        placeholder="------"
+                        maxlength="6"
+                        autocomplete="off"
+                        autofocus
+                    >
+                    <small class="form-text">Enter the 6-character code shown on your TV/Desktop screen</small>
+                    <button class="btn btn-primary w-100 mt-3" id="validateBtn">
+                        <i class="bi bi-check-circle"></i>
+                        Connect
+                    </button>
+                </div>
+
+                <div id="linkSubmitSection" class="hidden">
+                    <div class="alert alert-success">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <strong>Connected!</strong> You can now send links to your device.
+                    </div>
+                    <div class="status-badge">
+                        <i class="bi bi-link-45deg"></i>
+                        Paired with code: <span id="pairedCode"></span>
+                    </div>
+                    
+                    <div class="link-submit-section">
+                        <label class="form-label">
+                            <i class="bi bi-link-45deg"></i>
+                            Enter Link or URL
+                        </label>
+                        <input 
+                            type="url" 
+                            class="form-control" 
+                            id="linkInput" 
+                            placeholder="https://example.com or app install link"
+                            autocomplete="off"
+                        >
+                        <small class="form-text">Paste any URL: YouTube link, app install link, APK download, etc.</small>
+                        <button class="btn btn-primary w-100 mt-3" id="submitLinkBtn">
+                            <i class="bi bi-send"></i>
+                            Send to Device
+                        </button>
+                    </div>
+                </div>
+
+                <div id="errorAlert" class="alert alert-danger hidden" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <span id="errorMessage"></span>
+                </div>
+
+                <div id="successAlert" class="alert alert-success hidden" role="alert">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span id="successMessage"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.8.3/socket.io.min.js"></script>
+    <script src="js/socket-client.js"></script>
+    <script>
+        class MobileClient extends SocketClient {
+            constructor() {
+                super();
+                this.reconnectDelay = 1000;
+                this.maxReconnectAttempts = Infinity;
+                this.pairedCode = null;
+                this.isPaired = false;
+            }
+
+            connect(serverUrl = '') {
+                const url = serverUrl || window.location.origin;
+                
+                this.socket = io(url, {
+                    transports: ['websocket', 'polling'],
+                    reconnection: true,
+                    reconnectionDelay: this.reconnectDelay,
+                    reconnectionDelayMax: 5000,
+                    reconnectionAttempts: this.maxReconnectAttempts,
+                    timeout: 20000
+                });
+
+                this.setupEventHandlers();
+                return this.socket;
+            }
+
+            onConnect() {
+                console.log('Mobile client connected');
+            }
+
+            onDisconnect(reason) {
+                console.log('Mobile client disconnected:', reason);
+                if (this.isPaired) {
+                    showError('Connection lost. Please reconnect.');
+                }
+            }
+
+            onReconnect(attemptNumber) {
+                console.log('Mobile client reconnected');
+                if (this.pairedCode) {
+                    this.socket.emit('mobile:validate', { code: this.pairedCode });
+                }
+            }
+
+            pair(code) {
+                this.pairedCode = code;
+                this.socket.emit('mobile:validate', { code });
+            }
+
+            submitLink(link) {
+                if (!this.isPaired) {
+                    showError('Not paired. Please enter code first.');
+                    return false;
+                }
+                this.socket.emit('mobile:submit-link', { link });
+                return true;
+            }
+        }
+
+        let mobileClient;
+        let socket;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            mobileClient = new MobileClient();
+            const API_BASE_URL = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost' 
+                ? 'http://127.0.0.1:3000' 
+                : '';
+            socket = mobileClient.connect(API_BASE_URL || 'http://localhost:3000');
+
+            socket.on('mobile:paired', (data) => {
+                mobileClient.isPaired = true;
+                showPairedState(data.code);
+            });
+
+            socket.on('mobile:link-sent', (data) => {
+                showSuccess('Link sent successfully!');
+                document.getElementById('linkInput').value = '';
+            });
+
+            socket.on('mobile:error', (data) => {
+                showError(data.message);
+            });
+
+            document.getElementById('codeInput').addEventListener('input', function(e) {
+                let value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+                e.target.value = value;
+                if (value.length === 6) {
+                    validateCode();
+                }
+            });
+
+            document.getElementById('codeInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && this.value.length === 6) {
+                    validateCode();
+                }
+            });
+
+            document.getElementById('validateBtn').addEventListener('click', validateCode);
+
+            document.getElementById('linkInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    submitLink();
+                }
+            });
+
+            document.getElementById('submitLinkBtn').addEventListener('click', submitLink);
+        });
+
+        function validateCode() {
+            if (!mobileClient) {
+                console.error('mobileClient not initialized');
+                showError('Mobile client not ready. Please refresh the page.');
+                return;
+            }
+            
+            const code = document.getElementById('codeInput').value.trim().toUpperCase();
+            if (code.length !== 6) {
+                showError('Please enter a 6-character code');
+                return;
+            }
+            hideAlerts();
+            document.getElementById('validateBtn').disabled = true;
+            document.getElementById('validateBtn').innerHTML = '<span>Connecting...</span>';
+            mobileClient.pair(code);
+        }
+
+        function submitLink() {
+            if (!mobileClient) {
+                console.error('mobileClient not initialized');
+                showError('Mobile client not ready. Please refresh the page.');
+                return;
+            }
+            
+            const link = document.getElementById('linkInput').value.trim();
+            if (!link) {
+                showError('Please enter a link');
+                return;
+            }
+            let finalLink = link;
+            try {
+                new URL(link);
+            } catch {
+                if (!link.startsWith('http://') && !link.startsWith('https://')) {
+                    finalLink = 'https://' + link;
+                    try {
+                        new URL(finalLink);
+                        document.getElementById('linkInput').value = finalLink;
+                    } catch {
+                        showError('Please enter a valid URL');
+                        return;
+                    }
+                } else {
+                    showError('Please enter a valid URL');
+                    return;
+                }
+            }
+            hideAlerts();
+            document.getElementById('submitLinkBtn').disabled = true;
+            document.getElementById('submitLinkBtn').innerHTML = '<span>Sending...</span>';
+            const success = mobileClient.submitLink(finalLink);
+            if (success) {
+                setTimeout(() => {
+                    document.getElementById('submitLinkBtn').disabled = false;
+                    document.getElementById('submitLinkBtn').innerHTML = '<i class="bi bi-send"></i> Send to Device';
+                }, 2000);
+            } else {
+                document.getElementById('submitLinkBtn').disabled = false;
+                document.getElementById('submitLinkBtn').innerHTML = '<i class="bi bi-send"></i> Send to Device';
+            }
+        }
+
+        function showPairedState(code) {
+            document.getElementById('codeInputSection').classList.add('hidden');
+            document.getElementById('linkSubmitSection').classList.remove('hidden');
+            document.getElementById('pairedCode').textContent = code;
+            document.getElementById('step1').classList.remove('active');
+            document.getElementById('step1').classList.add('completed');
+            document.getElementById('step2').classList.add('active');
+            hideAlerts();
+        }
+
+        function showError(message) {
+            hideAlerts();
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('errorAlert').classList.remove('hidden');
+            document.getElementById('validateBtn').disabled = false;
+            document.getElementById('validateBtn').innerHTML = '<i class="bi bi-check-circle"></i> Connect';
+        }
+
+        function showSuccess(message) {
+            hideAlerts();
+            document.getElementById('successMessage').textContent = message;
+            document.getElementById('successAlert').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('successAlert').classList.add('hidden');
+            }, 3000);
+        }
+
+        function hideAlerts() {
+            document.getElementById('errorAlert').classList.add('hidden');
+            document.getElementById('successAlert').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>

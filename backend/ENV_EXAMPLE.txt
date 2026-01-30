@@ -1,0 +1,12 @@
+# Server Configuration
+PORT=3000
+NODE_ENV=development
+
+# Redis Configuration
+# For local development: redis://localhost:6379
+# For Railway: Use the REDIS_URL provided by Railway
+REDIS_URL=redis://localhost:6379
+
+# Admin Password (change this in production!)
+ADMIN_PASS=admin123
+
