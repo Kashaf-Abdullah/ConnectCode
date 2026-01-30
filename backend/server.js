@@ -78,6 +78,8 @@ app.use((req, res, next) => {
 });
 
 const PORT = process.env.PORT || 3000;
+console.log("REDIS URL:", process.env.UPSTASH_REDIS_REST_URL ? "✅ set" : "❌ missing");
+console.log("REDIS TOKEN:", process.env.UPSTASH_REDIS_REST_TOKEN ? "✅ set" : "❌ missing");
 
 server.listen(PORT, () => {
   console.log(`\n🚀 Server running on port ${PORT}`);
