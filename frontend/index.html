@@ -346,10 +346,8 @@
         }
 
         const desktopClient = new DesktopClient();
-        const API_BASE_URL = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost' 
-            ? 'http://127.0.0.1:3000' 
-            : '';
-        const socket = desktopClient.connect(API_BASE_URL || 'http://localhost:3000');
+        const API_BASE_URL = 'https://automatic-waffle-94wx66pp7p43pqg9.github.dev/' ;
+        const socket = desktopClient.connect(API_BASE_URL || 'https://automatic-waffle-94wx66pp7p43pqg9.github.dev/');
 
         socket.on('desktop:code', (data) => {
             desktopClient.displayCode(data.code);
