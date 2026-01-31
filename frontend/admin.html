@@ -440,7 +440,7 @@
             // Set backend URL based on environment
             if (!window.SERVER_URL) {
                 // Local development: connect to localhost:3000
-                // Production (Netlify): connect to GitHub Codespaces backend
+                // Production: connect to GitHub Codespaces backend
                 if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
                     window.SERVER_URL = 'http://localhost:3000';
                 } else {
